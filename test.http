@@ -1,0 +1,14 @@
+GET http://127.0.0.1:8080/config
+
+###
+
+GET http://127.0.0.1:8080/config/dynamic/modifiableProp
+
+###
+# System Property has higher ordinal and therefore overwrites the yaml provided property value
+# If system property is deleted, then the yaml property value is back again
+PUT http://127.0.0.1:8080/modify/modifiableProp?value=
+
+
+
+###
