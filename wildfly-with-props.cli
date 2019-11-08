@@ -1,0 +1,4 @@
+if (outcome == success) of /subsystem=microprofile-config-smallrye/config-source=configuration:read-resource
+    /subsystem=microprofile-config-smallrye/config-source=configuration:remove
+end-if
+/subsystem=microprofile-config-smallrye/config-source=configuration:add(properties={"count" = "10","pets" = "dog,cat","accounts" = "account1=user1,user2;account2=user1,user2;account2=user1,user2","modifiableProp" = "Initialized by wildfly-with-props.cli"})

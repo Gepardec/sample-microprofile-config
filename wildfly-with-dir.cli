@@ -1,0 +1,4 @@
+if (outcome == success) of /subsystem=microprofile-config-smallrye/config-source=configuration:read-resource
+    /subsystem=microprofile-config-smallrye/config-source=configuration:remove
+end-if
+/subsystem=microprofile-config-smallrye/config-source=configuration:add(dir={path="${env.CONFIG_DIR}"})

@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>at.ihet.samples</groupId>
     <artifactId>microprofile-config</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-
     <properties>
-        <!-- Compiler Plugin Properties -->
-        <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Plugin Versions -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     </properties>
-
-    <!-- The API Dependencies we implement the application with -->
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -29,44 +22,42 @@
             <version>1.0.0.Final</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.2</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
             <version>1.3</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.json.bind</groupId>
             <artifactId>javax.json.bind-api</artifactId>
             <version>1.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.4.1.Final</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
     <build>
-        <!-- The used maven plugins used by all profiles -->
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven-clean-plugin.version}</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
                 <configuration>
@@ -75,9 +66,7 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
-        <!-- Thorntail Profile, for building the microservice -->
         <profile>
             <id>thorntail</id>
             <properties>
@@ -89,8 +78,8 @@
                         <groupId>io.thorntail</groupId>
                         <artifactId>bom</artifactId>
                         <version>${version.thorntail}</version>
-                        <scope>import</scope>
                         <type>pom</type>
+                        <scope>import</scope>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
@@ -118,11 +107,42 @@
                         <groupId>io.thorntail</groupId>
                         <artifactId>thorntail-maven-plugin</artifactId>
                         <version>${version.thorntail}</version>
+                        <executions>
+                            <execution>
+                                <id>package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>with-yaml-props</id>
+                                <goals>
+                                    <goal>run</goal>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>${project.basedir}\thorntail-props.yaml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>with-yaml-dir</id>
+                                <goals>
+                                    <goal>run</goal>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>${project.basedir}\thorntail-dir.yaml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
                         <configuration>
-                            <arguments>
-                                <argument>-s</argument>
-                                <argument>${project.basedir}\thorntail.yaml</argument>
-                            </arguments>
                             <properties>
                                 <thorntail.bind.address>127.0.0.1</thorntail.bind.address>
                                 <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
@@ -133,34 +153,124 @@
                             <bundleDependencies>true</bundleDependencies>
                             <useUberJar>true</useUberJar>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <id>package</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>package</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
-        <!-- Wildfly Profile, for deploying as an ordinary war -->
+        <profile>
+            <id>quarkus</id>
+            <properties>
+                <quarkus.version>1.0.0.CR1</quarkus.version>
+            </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>io.quarkus</groupId>
+                        <artifactId>quarkus-bom</artifactId>
+                        <version>${quarkus.version}</version>
+                        <type>pom</type>
+                        <scope>import</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-resteasy</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-resteasy-jsonb</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-jsonb</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-undertow</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.quarkus</groupId>
+                        <artifactId>quarkus-maven-plugin</artifactId>
+                        <version>${quarkus.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <uberJar>true</uberJar>
+                            <systemProperties>
+                                <quarkus.http.host>127.0.0.1</quarkus.http.host>
+                                <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+                                <file>${project.basedir}\quarkus.properties</file>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>wildfly</id>
-            <properties>
-                <wildfly.dist.version>18.0.0.Final</wildfly.dist.version>
-                <wildfly.admin.user>admin</wildfly.admin.user>
-                <wildfly-admin.password>admin</wildfly-admin.password>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
                         <version>2.0.1.Final</version>
+                        <executions>
+                            <execution>
+                                <id>clear-all</id>
+                                <goals>
+                                    <goal>execute-commands</goal>
+                                </goals>
+                                <configuration>
+                                    <scripts>
+                                        <script>${project.basedir}\wildfly-clear-all.cli</script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>with-cli-sys-props</id>
+                                <goals>
+                                    <goal>execute-commands</goal>
+                                </goals>
+                                <configuration>
+                                    <scripts>
+                                        <script>${project.basedir}\wildfly-with-sys-props.cli</script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>with-cli-props</id>
+                                <goals>
+                                    <goal>execute-commands</goal>
+                                </goals>
+                                <configuration>
+                                    <scripts>
+                                        <script>${project.basedir}\wildfly-with-props.cli</script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>with-cli-dir</id>
+                                <goals>
+                                    <goal>execute-commands</goal>
+                                </goals>
+                                <configuration>
+                                    <scripts>
+                                        <script>${project.basedir}\wildfly-with-dir.cli</script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                        </executions>
                         <configuration>
                             <groupId>org.wildfly</groupId>
                             <artifactId>wildfly-dist</artifactId>
@@ -179,11 +289,18 @@
                             <startupTimeout>300</startupTimeout>
                             <timeout>60</timeout>
                             <serverType>STANDALONE</serverType>
-                            <propertiesFile>${project.basedir}\wildfly.properties</propertiesFile>
+                            <env>
+                                <CONFIG_DIR>${project.basedir}\external-config</CONFIG_DIR>
+                            </env>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
+            <properties>
+                <wildfly.dist.version>18.0.0.Final</wildfly.dist.version>
+                <wildfly-admin.password>admin</wildfly-admin.password>
+                <wildfly.admin.user>admin</wildfly.admin.user>
+            </properties>
         </profile>
     </profiles>
 </project>

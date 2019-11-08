@@ -1,0 +1,11 @@
+thorntail:
+  # Here we define the property configuration-source and its properties
+  microprofile:
+    config:
+      config-sources:
+        configuration:
+          properties:
+            count: 10
+            pets: "dog,cat"
+            accounts: "account1=user1,user2;account2=user1,user2;account2=user1,user2"
+            modifiableProp: "Initialized by torntail.yaml"

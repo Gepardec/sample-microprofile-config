@@ -1,0 +1,7 @@
+thorntail:
+  # Here we define the property configuration-source and its properties
+  microprofile:
+    config:
+      config-sources:
+        configuration:
+          dir: "./external-config"

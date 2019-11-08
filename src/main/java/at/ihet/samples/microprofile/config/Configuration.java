@@ -11,25 +11,26 @@ import java.util.Map;
 /**
  * This is a scoped instance and is created for each request,
  * which will reload the injected properties.
+ * Be aware that it depends on the MicroProfile-Config implementation if configurations are reloaded or not.
  */
 @RequestScoped
 public class Configuration {
 
     @Inject
     @ConfigProperty(name = "modifiableProp", defaultValue = "No 'prop' provided")
-    private String modifiableProp;
+    String modifiableProp;
 
     @Inject
     @ConfigProperty(name = "count")
-    private Integer count;
+    Integer count;
 
     @Inject
     @ConfigProperty(name = "pets")
-    private List<String> pets;
+    List<String> pets;
 
     @Inject
     @ConfigProperty(name = "accounts")
-    private AccountUsernames accountWithUsernames;
+    AccountUsernames accountWithUsernames;
 
     public String getModifiableProp() {
         return modifiableProp;
@@ -48,7 +49,7 @@ public class Configuration {
     }
 
     /**
-     * @return Jsonb annotations not found on CDI proxy, therefore return the real instance.
+     * @return Jsonb annotations not found on CDI proxy class, therefore return a map which can be serialized by Jsonb.
      */
     public Map<String, Object> getAsMap() {
         return new HashMap<>() {{

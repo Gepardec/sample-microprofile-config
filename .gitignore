@@ -15,7 +15,3 @@ target/
 *.zip
 *.tar.gz
 *.rar
-
-/*.yml
-/*.yaml
-/*.properties

@@ -20,10 +20,10 @@ public class ConfigResource {
     private Logger log = Logger.getLogger(ConfigResource.class);
 
     @Inject
-    private Configuration configuration;
+    Configuration configuration;
 
     @Inject
-    private Config config;
+    Config config;
 
     @Path("/config")
     @GET
@@ -37,6 +37,7 @@ public class ConfigResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getDynamic(@PathParam("property") final String property) {
+        // Programmatic lookup of properties
         final String result = config.getOptionalValue(property, String.class).orElse("Property not found");
         log.infof("Provided configuration parameter '%s=%s'", property, result);
         return result;

@@ -9,6 +9,4 @@ GET http://127.0.0.1:8080/config/dynamic/modifiableProp
 # If system property is deleted, then the yaml property value is back again
 PUT http://127.0.0.1:8080/modify/modifiableProp?value=
 
-
-
 ###

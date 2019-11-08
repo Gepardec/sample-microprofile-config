@@ -1,0 +1,15 @@
+if (outcome == success) of /subsystem=microprofile-config-smallrye/config-source=configuration:read-resource
+    /subsystem=microprofile-config-smallrye/config-source=configuration:remove
+end-if
+if (outcome == success) of /system-property=count:read-resource
+    /system-property=count:remove
+end-if
+if (outcome == success) of /system-property=pets:read-resource
+    /system-property=pets:remove
+end-if
+if (outcome == success) of /system-property=accounts:read-resource
+    /system-property=accounts:remove
+end-if
+if (outcome == success) of /system-property=modifiableProp:read-resource
+    /system-property=modifiableProp:remove
+end-if

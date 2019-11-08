@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Thanks to Type Erasure, we need a custom type which is injectable by MicroProfile-Config.
+ */
 public class AccountUsernames {
 
     private final Map<String, List<String>> accountWithUsernames;

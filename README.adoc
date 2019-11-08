@@ -1,0 +1,133 @@
+= Ample application MicroProfile Config
+
+This repository holds the sample application for illustrating the usage of MicroProfile-Config with Thorntail, Quarkus and Wildfly, and is part of an article you find at https://www.gepardec.com/blog/
+among other interesting articles.
+
+== Description
+
+This sample application implements a simple JEE application which is configured via MicroProfile-Config and runs as a microservice with Thorntail, Quarkus and as an WAR deployment in Wildfly.
+
+== Technologies
+
+* link:https://jdk.java.net/11/[Java JDK 11]
+* link:https://docs.jboss.org/wildfly/plugins/maven/2.0.1.Final/[wildfly-maven-plugin]
+* link:https://docs.thorntail.io/2.5.0.Final/#using-thorntail-maven-plugin_thorntail[thorntail-maven-plugin]
+* link:https://docs.thorntail.io/2.5.0.Final/[Thorntail]
+* link:https://wildfly.org/[Wildfly 18.0.0.Final]
+* link:https://github.com/eclipse/microprofile-config/tree/1.3[MicroProfile-Config]
+* link:https://github.com/quarkusio/quarkus/tree/1.0.0.CR1[Quarkus]
+
+== Resources
+
+* link:./external-config[``./external-config/``] +
+   The directory holding the configuration for directory configuration source
+* link:./thorntail-props.yaml[``./thorntail-props.yaml``] +
+   The Thorntail configuration file, defining all configuration properties
+* link:./thorntail-dir.yaml[``./thorntail-dir.yaml``] +
+   The Thorntail configuration file, defining the directory where the configurations are location, whereby the filename is the property key and the file content the property value
+* link:./src/main/resources/application.properties[``./src/main/resources/application.properties``] +
+   The Quarkus configuration file, defining all configuration properties
+* link:./src/main/resources/project-defaults.yaml[``./src/main/resources/project-defaults.yaml``] +
+   The Thorntail default configuration file.
+* link:./wildfly-clear-all.cli[``./wildfly-clear-all.cli``] +
+   The JBoss CLI script clearing all configurations
+* link:./wildfly-with-dir.cli[``./wildfly-with-dir.cli``] +
+   The JBoss CLI script setting up the directory configuration source in the smallrye subsystem
+* link:./wildfly-with-props.cli[``./wildfly-with-props.cli``] +
+   The JBoss CLI script setting up the properties configuration source in the smallrye subsystem
+* link:./wildfly-with-sys-props.cli[``./wildfly-with-sys-props.cli``] +
+   The JBoss CLI script setting up the system properties
+* link:./pom.xml[``./pom.xml``] +
+   The ``pom.xml`` defining the Thorntail, Quarkus and Wildfly configurations separated by profiles
+
+== How to build
+
+.Thorntail microservice
+[source,bash]
+----
+mvn clean install -Pthorntail
+----
+
+.Quarkus microservice
+[source,bash]
+----
+mvn clean install -Pquarkus
+----
+
+.Wildfly WAR deployment
+[source,bash]
+----
+mvn clean install -Pwildfly
+----
+
+== How to run
+
+.Start Thorntail microservice
+[source,bash]
+----
+# Starts Thorntail microservice with configuration as you choose
+# 1. With static properties in YAML configuration file
+mvn thorntail:run@with-yaml-props -Pthorntail
+
+# 1. With directory configured in YAML configuration file
+mvn thorntail:run@with-yaml-dir -Pthorntail
+----
+
+.Start Quarkus microservice
+[source,bash]
+----
+# With application.properties in src/main/resources
+java "-Djava.net.preferIPv4Stack=true" -jar target\microprofile-config-0.0.1-SNAPSHOT-runner.jar
+
+# With overwritten properties via system properties
+java "-Djava.net.preferIPv4Stack=true" "-Dpets=dog,cats,hamster" -jar target\microprofile-config-0.0.1-SNAPSHOT-runner.jar
+----
+
+TIP: Normally the maven goal ``quarkus:dev`` should start the application as well but it fails with ClassNotFoundException (org/jboss/logging/Logger). +
+     I'm not familiar with Qurakus yet, so we run the jar instead.
+
+.Start/Configure/Deploy Wildfly
+[source,bash]
+----
+# Starts the Wildfly application server
+mvn wildfly:start -Pwildfly
+
+# Configure the configuration source as you wish
+## 1. Via System Properties
+mvn wildfly:execute-commands@with-cli-sys-props -Pwildfly
+
+## 2. Via subsystem properties
+mvn wildfly:execute-commands@with-cli-props -Pwildfly
+
+## 2. Via subsystem dir property
+mvn wildfly:execute-commands@with-cli-dir -Pwildfly
+
+# Deploy the application
+mvn wildfly:deploy -Pwildfly
+----
+
+.Clear configurations in Wildfly
+[source,bash]
+----
+# Clear all configuration sources
+mvn wildfly:execute-commands@clear-all -Pwildfly
+----
+
+TIP: Wildfly loads configuration sources only once, but configuration properties can be overlayed via system properties.
+
+== How to test
+
+If you use Intellij then you can use the ``test.http`` file for testing the rest endpoints. +
+Otherwise see the following available endpoints and use the tool of your choice.
+
+.Retrieves the whole configuration
+``GET http://127.0.0.1:8080/config``
+
+.Retrieves the defined property
+``GET http://127.0.0.1:8080/config/dynamic/{property_name}``
+
+.Sets the property via a system property
+``PUT http://127.0.0.1:8080/modify/{property}?value=NEW_VALUE``
+
+TIP: Remember that system properties have the highest ordinal and will overlay properties provided by other configuration sources. +
+     If you reset the property set via a system property, then the property is retrieved from another configuration source.
