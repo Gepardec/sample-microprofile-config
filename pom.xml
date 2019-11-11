@@ -18,14 +18,14 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <version>1.0.0.Final</version>
+            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <version>2.0.1.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <version>2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -207,11 +207,6 @@
                         </executions>
                         <configuration>
                             <uberJar>true</uberJar>
-                            <systemProperties>
-                                <quarkus.http.host>127.0.0.1</quarkus.http.host>
-                                <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-                                <file>${project.basedir}\quarkus.properties</file>
-                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>
