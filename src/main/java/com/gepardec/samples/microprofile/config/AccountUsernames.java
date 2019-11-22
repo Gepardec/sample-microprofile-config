@@ -1,4 +1,4 @@
-package at.ihet.samples.microprofile.config;
+package com.gepardec.samples.microprofile.config;
 
 import java.util.Collections;
 import java.util.List;

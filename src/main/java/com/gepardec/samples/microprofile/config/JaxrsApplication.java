@@ -1,4 +1,4 @@
-package at.ihet.samples.microprofile.config;
+package com.gepardec.samples.microprofile.config;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
